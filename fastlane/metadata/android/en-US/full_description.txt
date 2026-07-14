@@ -1,0 +1,3 @@
+An extension service app for Podcini.A providing SoundCloud contents
+
+See source code on <a href="https://github.com/XilinJia/CloudSound">github.com/XilinJia/CloudSound</a>
