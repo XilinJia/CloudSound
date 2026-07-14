@@ -4,7 +4,6 @@ import ac.mdiq.podcini.shared.AudioSpec
 import ac.mdiq.podcini.shared.EpisodeIPC
 import ac.mdiq.podcini.shared.FeedIPC
 import ac.mdiq.podcini.shared.VideoSpec
-import ac.mdiq.podcini.shared.prepareUrl
 import ac.mdiq.podcini.sources.Provider
 import ac.roma.npeconnector.FeedBuilder
 import ac.roma.npeconnector.InfoCache
@@ -65,7 +64,7 @@ class CloudSoundProvider : Provider.Stub() {
     private val CACHE: InfoCache = InfoCache.instance
 
     override fun canHandleUrl(url_: String): Int {
-        return 0
+        return if (url_.contains("soundcloud.com")) 1 else -1
     }
 
     override fun buildEpisode(url: String): EpisodeIPC? {
@@ -166,36 +165,14 @@ class CloudSoundProvider : Provider.Stub() {
                 fb?.channelInfo = ChannelInfo.getInfo(npService, url)
                 runBlocking(Dispatchers.IO) { feed_ = fb?.feedFromChannel(0, "", hasVideo = false) }
             }
-
             isPlaylist(url) -> runBlocking(Dispatchers.IO) {
                 fb = FeedBuilder(FEEDTYPE, url, npService)
                 feed_ = fb?.feedFromPlaylist(hasVideo = false)
             }
-
             else -> {
                 // channel tabs other than videos
-                val uURL = Url(url)
-                val pathSegments = uURL.encodedPath.split("/")
-                val channelUrl = "https://www.youtube.com/channel/${pathSegments[1]}"
-                val channelInfo = ChannelInfo.getInfo(npService, channelUrl)
-                fb = FeedBuilder(FEEDTYPE, channelUrl, npService)
-                fb?.channelInfo = channelInfo
-                if (channelInfo?.tabs.isNullOrEmpty()) return null
-                var index = -1
-                var urlEnd = ""
-                for (i in channelInfo.tabs.indices) {
-                    urlEnd = Url(channelInfo.tabs[i].url).encodedPath.split("/").last()
-                    val url_ = prepareUrl(channelInfo.tabs[i].url)
-                    if (url == url_) {
-                        index = i
-                        break
-                    }
-                }
-                if (index < 0) return null
-                runBlocking(Dispatchers.IO) {
-                    feed_ = fb?.feedFromChannel(index, "", hasVideo = false)
-                    if (feed_ != null && urlEnd.isNotBlank()) feed_.title = "${feed_.title}: $urlEnd"
-                }
+                // TODO: is this needed
+                feed_ = null
             }
         }
         feed_?.id = 0L

@@ -1,7 +1,1 @@
-# 1.0.1
-
 * corrected canHandlerUrl, and removed unnecessary youtube reference
-
-# 1.0.0
-
-* first release

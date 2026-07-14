@@ -28,7 +28,6 @@
 
 -keep class org.schabi.newpipe.extractor.timeago.patterns.** { *; }
 -keep class org.schabi.newpipe.settings.notifications.** { *; }
--keep class org.schabi.newpipe.extractor.services.youtube.protos.** { *; }
 
 -dontwarn com.google.re2j.Matcher
 -dontwarn com.google.re2j.Pattern
