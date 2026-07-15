@@ -3,7 +3,6 @@ package ac.amalfi.cloudsound
 import ac.amalfi.cloudsound.CloudSoundProvider.Companion.FEEDTYPE
 import ac.mdiq.podcini.shared.PROVIDER_API_VERSION
 import ac.mdiq.podcini.shared.ProviderAttrs
-import ac.mdiq.podcini.shared.ShareType
 import ac.mdiq.podcini.sources.IFeedSearchProvider
 import ac.mdiq.podcini.sources.IMediaSearchProvider
 import ac.mdiq.podcini.sources.IPodciniGateway
@@ -33,12 +32,12 @@ class GatewayService : Service() {
                 name = "CloudSound",
                 apiVersion = PROVIDER_API_VERSION,
                 feedType = FEEDTYPE,
+                hasVideo = false,
                 hasMultiQualities = false,
                 hasSeparateAVs = false,
-                supportDonwload = false,
+                supportDownload = false,
                 hasViewCount = true,
-                hasLikeCount = true,
-                shareLogType = ShareType.CloudSound.name
+                hasLikeCount = true
             )
         }
 
