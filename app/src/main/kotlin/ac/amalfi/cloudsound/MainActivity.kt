@@ -19,7 +19,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             PodciniProviderTheme {
                 Box(modifier = Modifier.background(Color.Black).fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text("CloudSound Installed", color = Color.Green)
+                    Text("CloudSound Installed. No need to launch it, just use it from Podcini.A", color = Color.Green)
                 }
             }
         }

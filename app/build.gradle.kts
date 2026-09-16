@@ -18,8 +18,8 @@ android {
         applicationId = "ac.amalfi.cloudsound"
         minSdk = 26
         targetSdk = 37
-        versionCode = 3
-        versionName = "1.0.2"
+        versionCode = 5
+        versionName = "1.0.4"
     }
 
 //      sourceSets {
@@ -104,11 +104,8 @@ dependencies {
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.compose.ui)
-    implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
-
-    implementation(libs.androidx.webkit)
 
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.kotlinx.datetime)
@@ -116,14 +113,13 @@ dependencies {
     implementation(libs.ktor.http)
     implementation(libs.ktor.client.core)
     implementation(libs.ktor.client.okhttp)
-    implementation(libs.ktor.client.cio)
     implementation(libs.ktor.utils)
 
-   implementation("com.github.XilinJia:PodciniLib:1.1.2")
-   implementation("com.github.XilinJia:NPEConnector:1.1.3")
+   implementation("com.github.XilinJia:PodciniLib:1.1.4")
+   implementation("com.github.XilinJia:NPEConnector:1.1.6")
 
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs_nio:2.1.5")
-    implementation("com.github.teamnewpipe:NewPipeExtractor:v0.26.3")
+    implementation("com.github.teamnewpipe:NewPipeExtractor:v0.26.5")
     implementation("com.github.TeamNewPipe:nanojson:e9d656ddb49a412a5a0a5d5ef20ca7ef09549996")
     implementation("io.reactivex.rxjava3:rxjava:3.1.12")
     implementation("io.reactivex.rxjava3:rxandroid:3.0.2")

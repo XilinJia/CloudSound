@@ -1,6 +1,7 @@
 package ac.amalfi.cloudsound
 
 import ac.mdiq.podcini.shared.AudioSpec
+import ac.mdiq.podcini.shared.CaptionSpec
 import ac.mdiq.podcini.shared.EpisodeIPC
 import ac.mdiq.podcini.shared.FeedIPC
 import ac.mdiq.podcini.shared.VideoSpec
@@ -75,6 +76,10 @@ class CloudSoundProvider : Provider.Stub() {
         return getStreamInfo(url)?.description?.content
     }
 
+    override fun getCaptionSpecs(media: EpisodeIPC): List<CaptionSpec> {
+        return listOf()
+    }
+
     override fun getAudioSpecs(media: EpisodeIPC): List<AudioSpec> {
         var sSpecs = listOf<AudioSpec>()
         val audioStreams = getStreamInfo(media.downloadUrl)?.audioStreams
@@ -139,7 +144,6 @@ class CloudSoundProvider : Provider.Stub() {
                     fb?.channelInfo = ChannelInfo.getInfo(npService, url)
                     fb?.feedFromChannel(index, "", hasVideo = false)
                 }
-
                 isPlaylist(url) -> if (index == 0) fb?.feedFromPlaylist(hasVideo = false) else null
                 else -> null
             }
