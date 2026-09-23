@@ -37,7 +37,8 @@ class GatewayService : Service() {
                 hasSeparateAVs = false,
                 supportDownload = false,
                 hasViewCount = true,
-                hasLikeCount = true
+                hasLikeCount = true,
+                hasTranscripts = false
             )
         }
 
