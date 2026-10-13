@@ -4,72 +4,43 @@ import ac.mdiq.podcini.shared.AudioSpec
 import ac.mdiq.podcini.shared.CaptionSpec
 import ac.mdiq.podcini.shared.EpisodeIPC
 import ac.mdiq.podcini.shared.FeedIPC
-import ac.mdiq.podcini.shared.VideoSpec
+import ac.mdiq.podcini.shared.HTTPAttribs
+import ac.mdiq.podcini.shared.MediaSpecs
+import ac.mdiq.podcini.shared.USER_AGENT
 import ac.mdiq.podcini.sources.Provider
 import ac.roma.npeconnector.FeedBuilder
 import ac.roma.npeconnector.InfoCache
 import ac.roma.npeconnector.getSortedVStreams
 import ac.roma.npeconnector.toAudioSpec
 import ac.roma.npeconnector.toEpisodeIPC
-import android.service.autofill.UserData
 import android.util.Log
 import io.ktor.http.Url
-import kotlinx.coroutines.CompletableDeferred
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.schabi.newpipe.extractor.MediaFormat
 import org.schabi.newpipe.extractor.NewPipe
 import org.schabi.newpipe.extractor.channel.ChannelInfo
 import org.schabi.newpipe.extractor.stream.DeliveryMethod
 import org.schabi.newpipe.extractor.stream.StreamInfo
-import java.util.concurrent.ConcurrentHashMap
-import kotlin.coroutines.cancellation.CancellationException
 
 class CloudSoundProvider : Provider.Stub() {
-    private val serviceScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
-
-    private val ongoingRequests = ConcurrentHashMap<String, Job>()
-
     private val serviceId = 1
 
     private val npService by lazy { NewPipe.getService(serviceId) }
 
-    fun loadUserData(userId: String): UserData? {
-        val requestKey = "loadUserData_$userId"
-        val deferredResult = CompletableDeferred<UserData?>()
-        ongoingRequests[requestKey] = deferredResult
-
-        val job = serviceScope.launch { try { deferredResult.complete(fetchUserFromNetwork(userId)) } catch (e: Exception) { deferredResult.completeExceptionally(e) } }
-
-        deferredResult.invokeOnCompletion {
-            if (deferredResult.isCancelled) job.cancel()
-            ongoingRequests.remove(requestKey)
-        }
-
-        return runBlocking { try { deferredResult.await() } catch (e: CancellationException) { null } }
-    }
-
-    suspend fun fetchUserFromNetwork(userId: String): UserData? {
-        return null
-    }
-
-    fun cancelOperation(operationPrefix: String, id: String) {
-        val requestKey = "${operationPrefix}_$id"
-        ongoingRequests[requestKey]?.cancel()
-    }
-
     private val CACHE: InfoCache = InfoCache.instance
 
+    override fun httpAtribsFor(url: String): HTTPAttribs {
+        return HTTPAttribs(USER_AGENT, "", "")
+    }
+
     override fun canHandleUrl(url_: String): Int {
+//        Log.d("canHandleUrl", "url: $url_")
         return if (url_.contains("soundcloud.com")) 1 else -1
     }
 
     override fun buildEpisode(url: String): EpisodeIPC? {
-        return StreamInfo.getInfo(npService, url)?.toEpisodeIPC(isAudio = true)
+        return getStreamInfo(url)?.toEpisodeIPC(isAudio = true)
     }
 
     override fun getEpisodeDescription(url: String): String? {
@@ -80,38 +51,36 @@ class CloudSoundProvider : Provider.Stub() {
         return listOf()
     }
 
-    override fun getAudioSpecs(media: EpisodeIPC): List<AudioSpec> {
-        var sSpecs = listOf<AudioSpec>()
-        val audioStreams = getStreamInfo(media.downloadUrl)?.audioStreams
+    override fun getMediaSpecs(media: EpisodeIPC, force: Boolean): MediaSpecs {
+        val mediaSpecs = MediaSpecs()
+        val streamInfo = getStreamInfo(media.downloadUrl, force) ?: return mediaSpecs
+        var aSpecs = listOf<AudioSpec>()
+        val audioStreams = streamInfo.audioStreams
         if (audioStreams != null) {
             val collectedStreams = mutableSetOf<AudioSpec>()
             for (stream in audioStreams) {
                 if (stream == null || stream.deliveryMethod == DeliveryMethod.TORRENT || (stream.deliveryMethod == DeliveryMethod.HLS && stream.format == MediaFormat.OPUS)) continue
                 collectedStreams.add(stream.toAudioSpec())
             }
-            sSpecs = collectedStreams.toList().sortedWith(compareBy { it.bitrate })
+            aSpecs = collectedStreams.toList().sortedWith(compareBy { it.bitrate })
         }
-        return sSpecs
-    }
-
-    override fun getVideoOnlySpecs(media: EpisodeIPC): List<VideoSpec> {
-        return getSortedVStreams(listOf(), getStreamInfo(media.downloadUrl)?.videoOnlyStreams, ascendingOrder = true, preferVideoOnlyStreams = true)
-    }
-
-    override fun getVideoSpecs(media: EpisodeIPC): List<VideoSpec> {
-        return getSortedVStreams(getStreamInfo(media.downloadUrl)?.videoStreams, listOf(), ascendingOrder = true, preferVideoOnlyStreams = false)
+        val vSpecs = getSortedVStreams(listOf(), streamInfo.videoOnlyStreams, ascendingOrder = true, preferVideoOnlyStreams = true)
+        val mSpecs = getSortedVStreams(streamInfo.videoStreams, listOf(), ascendingOrder = true, preferVideoOnlyStreams = false)
+        mediaSpecs.audioSpecs = aSpecs
+        mediaSpecs.videoSpecs = vSpecs
+        mediaSpecs.muxedSpecs = mSpecs
+        return mediaSpecs
     }
 
     internal fun getStreamInfo(url: String?, forceLoad: Boolean = false): StreamInfo? {
         if (url.isNullOrBlank()) return null
         val cacheType = InfoCache.Type.STREAM
-        val streamInfo = StreamInfo.getInfo(npService, url).also { info -> CACHE.putInfo(serviceId, url, info, cacheType) }
         return if (forceLoad) {
             CACHE.removeInfo(serviceId, url, cacheType)
-            streamInfo
+            StreamInfo.getInfo(npService, url).also { info -> CACHE.putInfo(serviceId, url, info, cacheType) }
         } else {
             val cachedData = CACHE.getFromKey(serviceId, url, cacheType) as? StreamInfo
-            cachedData ?: streamInfo
+            cachedData ?: StreamInfo.getInfo(npService, url).also { info -> CACHE.putInfo(serviceId, url, info, cacheType) }
         }
     }
 

@@ -26,6 +26,10 @@
 -keepattributes RuntimeVisibleAnnotations, RuntimeVisibleParameterAnnotations
 -keepattributes Signature, InnerClasses, EnclosingMethod
 
+-keep class ac.mdiq.podcini.** { *; }
+-keep class ac.roma.npeconnector.** { *; }
+-keep class ac.amalfi.cloudsound.** { *; }
+
 -keep class org.schabi.newpipe.extractor.timeago.patterns.** { *; }
 -keep class org.schabi.newpipe.settings.notifications.** { *; }
 

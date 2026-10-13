@@ -24,7 +24,7 @@ import kotlin.collections.set
 
 class GatewayService : Service() {
     private val providerBinder = CloudSoundProvider()
-    private val searchProviderBinder = FeedSearcher("CloudSound", 1)
+    private val searchProviderBinder = FeedSearcher("CloudSound", 1, listOf("playlists"))
     private val mediaSearcherBinder = MediaSearcher("CloudSound", 1)
     private val gatewayBinder = object : IPodciniGateway.Stub() {
         override fun getAttributes(): ProviderAttrs {
@@ -35,7 +35,6 @@ class GatewayService : Service() {
                 hasVideo = false,
                 hasMultiQualities = false,
                 hasSeparateAVs = false,
-                supportDownload = false,
                 hasViewCount = true,
                 hasLikeCount = true,
                 hasTranscripts = false
