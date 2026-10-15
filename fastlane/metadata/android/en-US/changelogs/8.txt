@@ -1,0 +1,3 @@
+* enable multiple quality support
+* accepting HLS audio streams
+* catch dependency exception

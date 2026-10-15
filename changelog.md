@@ -1,3 +1,9 @@
+# 1.0.7
+
+* enable multiple quality support
+* accepting HLS audio streams
+* catch dependency exception
+
 # 1.0.6
 
 * PodciniLib upped to 1.1.6, NPEConnector upped to 1.1.8

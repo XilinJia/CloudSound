@@ -6,7 +6,6 @@ import ac.mdiq.podcini.shared.EpisodeIPC
 import ac.mdiq.podcini.shared.FeedIPC
 import ac.mdiq.podcini.shared.HTTPAttribs
 import ac.mdiq.podcini.shared.MediaSpecs
-import ac.mdiq.podcini.shared.USER_AGENT
 import ac.mdiq.podcini.sources.Provider
 import ac.roma.npeconnector.FeedBuilder
 import ac.roma.npeconnector.InfoCache
@@ -17,7 +16,6 @@ import android.util.Log
 import io.ktor.http.Url
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
-import org.schabi.newpipe.extractor.MediaFormat
 import org.schabi.newpipe.extractor.NewPipe
 import org.schabi.newpipe.extractor.channel.ChannelInfo
 import org.schabi.newpipe.extractor.stream.DeliveryMethod
@@ -31,7 +29,7 @@ class CloudSoundProvider : Provider.Stub() {
     private val CACHE: InfoCache = InfoCache.instance
 
     override fun httpAtribsFor(url: String): HTTPAttribs {
-        return HTTPAttribs(USER_AGENT, "", "")
+        return HTTPAttribs("", "", "")
     }
 
     override fun canHandleUrl(url_: String): Int {
@@ -59,7 +57,8 @@ class CloudSoundProvider : Provider.Stub() {
         if (audioStreams != null) {
             val collectedStreams = mutableSetOf<AudioSpec>()
             for (stream in audioStreams) {
-                if (stream == null || stream.deliveryMethod == DeliveryMethod.TORRENT || (stream.deliveryMethod == DeliveryMethod.HLS && stream.format == MediaFormat.OPUS)) continue
+//                if (stream == null || stream.deliveryMethod == DeliveryMethod.TORRENT || (stream.deliveryMethod == DeliveryMethod.HLS && stream.format == MediaFormat.OPUS)) continue
+                if (stream == null || stream.deliveryMethod == DeliveryMethod.TORRENT) continue
                 collectedStreams.add(stream.toAudioSpec())
             }
             aSpecs = collectedStreams.toList().sortedWith(compareBy { it.bitrate })
@@ -77,10 +76,10 @@ class CloudSoundProvider : Provider.Stub() {
         val cacheType = InfoCache.Type.STREAM
         return if (forceLoad) {
             CACHE.removeInfo(serviceId, url, cacheType)
-            StreamInfo.getInfo(npService, url).also { info -> CACHE.putInfo(serviceId, url, info, cacheType) }
+            try { StreamInfo.getInfo(npService, url).also { info -> CACHE.putInfo(serviceId, url, info, cacheType) } } catch (e: Exception) { null}
         } else {
             val cachedData = CACHE.getFromKey(serviceId, url, cacheType) as? StreamInfo
-            cachedData ?: StreamInfo.getInfo(npService, url).also { info -> CACHE.putInfo(serviceId, url, info, cacheType) }
+            cachedData ?: try { StreamInfo.getInfo(npService, url).also { info -> CACHE.putInfo(serviceId, url, info, cacheType) } } catch (e: Exception) { null}
         }
     }
 
