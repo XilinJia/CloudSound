@@ -1,3 +1,8 @@
+# 1.0.8
+
+* PodciniLib upped to 1.1.7, NPEConnector upped to 1.1.9
+* some dependencies update
+
 # 1.0.7
 
 * enable multiple quality support

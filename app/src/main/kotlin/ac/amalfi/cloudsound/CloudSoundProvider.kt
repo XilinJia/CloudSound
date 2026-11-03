@@ -49,16 +49,19 @@ class CloudSoundProvider : Provider.Stub() {
         return listOf()
     }
 
-    override fun getMediaSpecs(media: EpisodeIPC, force: Boolean): MediaSpecs {
+    override fun getMediaSpecs(media: EpisodeIPC, preferredLocales: List<String>, force: Boolean): MediaSpecs {
         val mediaSpecs = MediaSpecs()
         val streamInfo = getStreamInfo(media.downloadUrl, force) ?: return mediaSpecs
         var aSpecs = listOf<AudioSpec>()
         val audioStreams = streamInfo.audioStreams
         if (audioStreams != null) {
+            val size = audioStreams.size
             val collectedStreams = mutableSetOf<AudioSpec>()
             for (stream in audioStreams) {
-//                if (stream == null || stream.deliveryMethod == DeliveryMethod.TORRENT || (stream.deliveryMethod == DeliveryMethod.HLS && stream.format == MediaFormat.OPUS)) continue
+                //                if (stream == null || stream.deliveryMethod == DeliveryMethod.TORRENT || (stream.deliveryMethod == DeliveryMethod.HLS && stream.format == MediaFormat.OPUS)) continue
                 if (stream == null || stream.deliveryMethod == DeliveryMethod.TORRENT) continue
+                val locale = stream.audioLocale?.toLanguageTag()
+                if (size > 100 && locale != null && preferredLocales.isNotEmpty() && preferredLocales.none { it.equals(locale, ignoreCase = true) }) continue
                 collectedStreams.add(stream.toAudioSpec())
             }
             aSpecs = collectedStreams.toList().sortedWith(compareBy { it.bitrate })
