@@ -45,13 +45,13 @@ class CloudSoundProvider : Provider.Stub() {
         return getStreamInfo(url)?.description?.content
     }
 
-    override fun getCaptionSpecs(media: EpisodeIPC): List<CaptionSpec> {
+    override fun getCaptionSpecs(url: String): List<CaptionSpec> {
         return listOf()
     }
 
-    override fun getMediaSpecs(media: EpisodeIPC, preferredLocales: List<String>, force: Boolean): MediaSpecs {
+    override fun getMediaSpecs(url: String, preferredLocales: List<String>, force: Boolean): MediaSpecs {
         val mediaSpecs = MediaSpecs()
-        val streamInfo = getStreamInfo(media.downloadUrl, force) ?: return mediaSpecs
+        val streamInfo = getStreamInfo(url, force) ?: return mediaSpecs
         var aSpecs = listOf<AudioSpec>()
         val audioStreams = streamInfo.audioStreams
         if (audioStreams != null) {

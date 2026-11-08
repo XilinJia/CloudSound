@@ -18,8 +18,8 @@ android {
         applicationId = "ac.amalfi.cloudsound"
         minSdk = 26
         targetSdk = 37
-        versionCode = 9
-        versionName = "1.0.8"
+        versionCode = 10
+        versionName = "1.0.9"
     }
 
     buildFeatures {
@@ -102,11 +102,11 @@ dependencies {
     implementation(libs.ktor.client.okhttp)
     implementation(libs.ktor.utils)
 
-   implementation("com.github.XilinJia:PodciniLib:1.1.7")
-   implementation("com.github.XilinJia:NPEConnector:1.1.9")
+   implementation("com.github.XilinJia:PodciniLib:1.1.8")
+   implementation("com.github.XilinJia:NPEConnector:1.1.10")
 
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs_nio:2.1.5")
-    implementation("com.github.teamnewpipe:NewPipeExtractor:v0.26.5")
+    implementation("com.github.teamnewpipe:NewPipeExtractor:v0.27.0")
     implementation("com.github.TeamNewPipe:nanojson:e9d656ddb49a412a5a0a5d5ef20ca7ef09549996")
     implementation("io.reactivex.rxjava3:rxjava:3.1.12")
     implementation("io.reactivex.rxjava3:rxandroid:3.0.2")

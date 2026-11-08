@@ -1,3 +1,8 @@
+# 1.0.9
+
+* PodciniLib upped to 1.1.8, NPEConnector upped to 1.1.10, NewPipeExtractor upped to 0.27.0
+* AGP upped to 9.5.1
+
 # 1.0.8
 
 * PodciniLib upped to 1.1.7, NPEConnector upped to 1.1.9
