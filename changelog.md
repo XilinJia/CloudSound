@@ -1,3 +1,8 @@
+# 1.0.10
+
+* NewPipeExtractor upped to 0.27.1
+* cleared unnecessary dependencies
+
 # 1.0.9
 
 * PodciniLib upped to 1.1.8, NPEConnector upped to 1.1.10, NewPipeExtractor upped to 0.27.0
