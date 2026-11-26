@@ -1,3 +1,9 @@
+# 1.0.11
+
+* updated main screen message
+* NPEConnector upped to 1.1.10
+* minor dependencies update
+
 # 1.0.10
 
 * NewPipeExtractor upped to 0.27.1

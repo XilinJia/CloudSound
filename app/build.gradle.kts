@@ -18,8 +18,8 @@ android {
         applicationId = "ac.amalfi.cloudsound"
         minSdk = 26
         targetSdk = 37
-        versionCode = 11
-        versionName = "1.0.10"
+        versionCode = 12
+        versionName = "1.0.11"
     }
 
     buildFeatures {
@@ -96,7 +96,7 @@ dependencies {
     implementation(libs.ktor.client.okhttp)
 
     implementation("com.github.XilinJia:PodciniLib:1.1.9")
-    implementation("com.github.XilinJia:NPEConnector:1.1.11")
+    implementation("com.github.XilinJia:NPEConnector:1.1.12")
 
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs_nio:2.1.5")
     implementation("com.github.teamnewpipe:NewPipeExtractor:v0.27.1")
